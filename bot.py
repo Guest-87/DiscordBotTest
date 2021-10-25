@@ -18,6 +18,8 @@ GoogleSheets = gspread.authorize(Connect)
 # 開啟資料表及工作表
 Sheet = GoogleSheets.open_by_key('1UK4EJbukwoCWCneku3dFgwZ6OTx1zE11ECWXzh_wjMc')
 Sheets = Sheet.worksheet('87BotTest')
+Sheetg8 = Sheet.worksheet('姬掰簽到表')
+Sheetb5 = Sheet.worksheet('天下布武簽到')
 
 #BOT 命令一定要以 / 作為開頭
 bot = commands.Bot(command_prefix = '/')
@@ -56,8 +58,23 @@ async def g8sign(ctx , st):
     print(point)
     cellg8 = 'F'+ str(point)
 
-    await ctx.send(f'{g8names[point-10]}完成簽到 , {st}')
-    Sheets.update_acell(cellg8,st)
+    if   st == '730' :
+        await ctx.send(f'{g8names[point-10]}完成簽到 , 七點半前集合')
+        Sheetg8.update_acell(cellg8,'七點半前集合')
+    elif st == '800' :
+        await ctx.send(f'{g8names[point-10]}完成簽到 , 八點前集合')
+        Sheetg8.update_acell(cellg8,'八點前集合')
+    elif st == 'doing' :
+        await ctx.send(f'{g8names[point-10]}完成簽到 , 領土戰期間會出現')
+        Sheetg8.update_acell(cellg8,'領土戰期間會出現')
+    elif st == 'unknow' :
+        await ctx.send(f'{g8names[point-10]}完成簽到 , 不一定出現')
+        Sheetg8.update_acell(cellg8,'不一定出現')
+    elif st == 'no' :
+        await ctx.send(f'{g8names[point-10]}完成簽到 , 無法參加')
+        Sheetg8.update_acell(cellg8,'無法參加')
+    else : 
+        await ctx.send('請按照格式輸入指令')
 
 #b5簽到命令
 @bot.command()
@@ -73,8 +90,23 @@ async def b5sign(ctx , st):
     print(point)
     cellb5 = 'E'+ str(point)
 
-    await ctx.send(f'{b5names[point-12]}完成簽到 , {st}')
-    Sheets.update_acell(cellb5,st)
+    if   st == '730' :
+        await ctx.send(f'{b5names[point-12]}完成簽到 , 七點半前集合')
+        Sheetb5.update_acell(cellb5,'七點半前集合')
+    elif st == '800' :
+        await ctx.send(f'{b5names[point-12]}完成簽到 , 八點前集合')
+        Sheetb5.update_acell(cellb5,'八點前集合')
+    elif st == 'doing' :
+        await ctx.send(f'{b5names[point-12]}完成簽到 , 領土戰期間會出現')
+        Sheetb5.update_acell(cellb5,'領土戰期間會出現')
+    elif st == 'unknow' :
+        await ctx.send(f'{b5names[point-12]}完成簽到 , 不一定出現')
+        Sheetb5.update_acell(cellb5,'不一定出現')
+    elif st == 'no' :
+        await ctx.send(f'{b5names[point-12]}完成簽到 , 無法參加')
+        Sheetb5.update_acell(cellb5,'無法參加')
+    else : 
+        await ctx.send('請按照格式輸入指令')
 
 
 #BOT執行
