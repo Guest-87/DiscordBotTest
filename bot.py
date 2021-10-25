@@ -29,31 +29,32 @@ for item in json_token :
     tokens = item['token']
 
 #開啟ID.json以讀取ID相關資料
-input_file = open ('ID.json')
-json_ID = json.load(input_file)
-for item in json_ID :
-    DCname = item['DCID']
-    name = item['ID']
-    point = item['point']
+# input_file = open ('ID.json')
+# json_ID = json.load(input_file)
+# for item in json_ID :
+#     DCname = item['DCID']
+#     name = item['ID']
+#     point = item['point']
 
 
 #BOT上線標記
 @bot.event
 async def on_ready():
     print(">> Bot is online <<")
-    for item in DCname : 
-         print("name:" + item['DCname'])
 
 #簽到命令
 @bot.command()
-async def sign(ctx):
-    await ctx.send(f'{ctx.author.name}完成簽到')
-    Sheets.update_acell('F10','七點半前集合')
-    Sheets.update_acell('F11','八點前集合')
-    Sheets.update_acell('F12','領土戰期間會出現')
-    Sheets.update_acell('F13','不一定出現')
-    Sheets.update_acell('F14','無法參加')
-    Sheets.update_acell('F15','???')
+async def sign(ctx , st):
+    if ctx.author.name == '秋陽':
+        point = 'F11'
+    if ctx.author.name == '泡泡':
+        point = 'F12'
+    if ctx.author.name == '直美':
+        point = 'F10'
+    if ctx.author.name == 'Guest-87':
+        point = 'F24'
+    await ctx.send(f'{ctx.author.name}完成簽到 , {st}')
+    Sheets.update_acell(point,st)
 
 #BOT執行
 bot.run(tokens)
