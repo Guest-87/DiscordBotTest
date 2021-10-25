@@ -7,7 +7,7 @@ from discord.ext import commands
 from pprint import pprint
 
 # 設定 json 檔案路徑及程式操作範圍
-Json = 'the-formula-307715-a7b60e4ba970.json'
+Json = 'the-formula-307715-b90215218798.json'
 Url = ['https://spreadsheets.google.com/feeds',
        'https://www.googleapis.com/auth/drive']
 
@@ -28,33 +28,54 @@ json_token = json.load(input_file)
 for item in json_token :
     tokens = item['token']
 
-#開啟ID.json以讀取ID相關資料
-# input_file = open ('ID.json')
-# json_ID = json.load(input_file)
-# for item in json_ID :
-#     DCname = item['DCID']
-#     name = item['ID']
-#     point = item['point']
+#從google sheets讀取ID and Discord ID資料
+Sheetsid = Sheet.worksheet('DiscordID對照表')
+g8ids = Sheetsid.col_values(4)
+b5ids = Sheetsid.col_values(2)
+g8names = Sheetsid.col_values(3)
+b5names = Sheetsid.col_values(1)
 
 
 #BOT上線標記
 @bot.event
 async def on_ready():
     print(">> Bot is online <<")
+    
 
-#簽到命令
+#g8簽到命令
 @bot.command()
-async def sign(ctx , st):
-    if ctx.author.name == '秋陽':
-        point = 'F11'
-    if ctx.author.name == '泡泡':
-        point = 'F12'
-    if ctx.author.name == '直美':
-        point = 'F10'
-    if ctx.author.name == 'Guest-87':
-        point = 'F24'
-    await ctx.send(f'{ctx.author.name}完成簽到 , {st}')
-    Sheets.update_acell(point,st)
+async def g8sign(ctx , st):
+    id = str(ctx.author.id)
+    for i in range(len(g8ids)):
+        if id == g8ids[i] : 
+            point = i+10
+            break
+        else :
+            continue
+    
+    print(point)
+    cellg8 = 'F'+ str(point)
+
+    await ctx.send(f'{g8names[point-10]}完成簽到 , {st}')
+    Sheets.update_acell(cellg8,st)
+
+#b5簽到命令
+@bot.command()
+async def b5sign(ctx , st):
+    id = str(ctx.author.id)
+    for i in range(len(b5ids)):
+        if id == b5ids[i] : 
+            point = i+12
+            break
+        else :
+            continue
+    
+    print(point)
+    cellb5 = 'E'+ str(point)
+
+    await ctx.send(f'{b5names[point-12]}完成簽到 , {st}')
+    Sheets.update_acell(cellb5,st)
+
 
 #BOT執行
 bot.run(tokens)
