@@ -3,6 +3,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials as SAC
 import discord
 import json
+import datetime
 from discord.ext import commands
 from pprint import pprint
 
@@ -17,7 +18,6 @@ GoogleSheets = gspread.authorize(Connect)
 
 # 開啟資料表及工作表
 Sheet = GoogleSheets.open_by_key('1UK4EJbukwoCWCneku3dFgwZ6OTx1zE11ECWXzh_wjMc')
-Sheets = Sheet.worksheet('87BotTest')
 Sheetg8 = Sheet.worksheet('姬掰簽到表')
 Sheetb5 = Sheet.worksheet('天下布武簽到')
 
@@ -108,6 +108,74 @@ async def b5sign(ctx , st):
     else : 
         await ctx.send('請按照格式輸入指令')
 
+#Tag未簽到人員
+@bot.command()
+async def nosign(ctx):
+    g8no = Sheetg8.col_values(6)
+    b5no = Sheetb5.col_values(5)
+    g8ids = Sheetsid.col_values(4)
+    b5ids = Sheetsid.col_values(2)
+    allnog8 = ''
+    allnob5 = ''
+    #print(g8no)
+    for i in range(len(g8ids)) :
+        print(i+11) 
+        if g8no[i+10] == '' : 
+            allnog8 = allnog8+'<@!'+g8ids[i]+'>'
+            if i%30==29 : 
+                await ctx.send(f'{allnog8} , 請去簽到 , 謝謝 。')
+                allnog8 = '' 
+        else : 
+            continue
+    await ctx.send(f'{allnog8} , 請去簽到 , 謝謝 。')
+
+    for i in range(len(b5ids)) :
+        print(i+12) 
+        if b5no[i+12] == '' : 
+            allnob5 = allnob5+'<@!'+b5ids[i]+'>'
+            if i%30==29 : 
+               await ctx.send(f'{allnob5} , 請去簽到 , 謝謝 。')
+               allnob5 = ''
+        else : 
+            continue
+    
+    await ctx.send(f'{allnob5} , 請去簽到 , 謝謝 。')
+    
+    print('finish')
+
+#清空簽到表and自動更換日期
+@bot.command()
+async def nextweek(ctx):
+    g8day  =  Sheetg8.acell('C8').value
+    g8week =  Sheetg8.acell('D8').value
+    g8days = datetime.datetime.strptime(g8day, "%Y/%m/%d")
+    print(datetime.datetime.date(g8days))
+    fourday = datetime.timedelta(days=4)
+    threeday = datetime.timedelta(days=3)
+
+    if g8week == '星期二' : 
+        addday = fourday
+        week = '星期六'
+    elif g8week == '星期六' : 
+        addday = threeday
+        week = '星期二'
+
+    alldate = g8days + addday
+
+    Sheetg8.update_acell('C8',f'{alldate.strftime("%Y/%m/%d")}')
+    Sheetb5.update_acell('A10',f'{alldate.strftime("%Y/%m/%d")}')
+    Sheetg8.update_acell('D8',f'{week}')
+    Sheetb5.update_acell('D10',f'{week}')
+    print(alldate.strftime("%Y/%m/%d"))
+    g8row = Sheetg8.range("F10:F109")
+    b5row = Sheetb5.range("E12:E111")
+    for cell in g8row:
+        cell.value = ''
+    for cell in b5row:
+        cell.value = ''
+    Sheetg8.update_cells(g8row)
+    Sheetb5.update_cells(b5row)
+    
 
 #BOT執行
 bot.run(tokens)
